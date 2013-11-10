@@ -1,3 +1,9 @@
+.DS_Store
+*~
+*.swp
+index.yaml
+auth.py
+
 *.py[cod]
 
 # C extensions
