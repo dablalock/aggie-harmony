@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Bootstrap -->
         <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-        <title>Facebook Example</title>
+        <title>Aggie Harmony</title>
+    <link rel="stylesheet" type="text/css" href="css/home.css" />
     </head>
     <body>
         {% if current_user %}
@@ -48,10 +49,13 @@
         {% endif %}
 
         {% if not current_user %}
+<!--div id="backstretch" style="left: 0px; top: 0px; position: fixed; overflow: hidden; z-index: -999999; margin: 0px; padding: 0px; height: 136px; width: 1073px;">
+<img style="position: absolute; margin: 0px; padding: 0px; border: medium none; z-index: -999999; max-width: none; width: 1073px; height: 757.312px; left: 0px; top: -310.656px;" src="http://postimg.org/image/vd3mn1jd1/">
+</div-->
         <div class="jumbotron">
-            <h1>AggieHarmony</h1>
-            <p class="lead">A midnight yell dating site for aggies.</p>
-            <a class="btn btn-large btn-primary" onclick="doLogin();return false;" href="#">Login</a>
+            <h1 style="color:#500000">Aggie<span style="color:black">Harmony</span></h1>
+            <p class="lead" style="color:black">A midnight yell dating site for aggies.</p>
+            <a class="btn btn-large btn-custom-lighten" onclick="doLogin();return false;" href="#">Log in</a>
         </div>
         {% endif %}
 
