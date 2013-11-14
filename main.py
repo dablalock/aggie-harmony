@@ -50,6 +50,11 @@ class User(db.Model):
     profile_url = db.StringProperty(required=True)
     access_token = db.StringProperty(required=True)
 
+class Friend(db.Model): #Minimal for interface checkpoint
+    id = db.StringProperty(required=True)
+    name = db.StringProperty(required=True)
+    profile_url = db.StringProperty(required=True)
+    friend_ref = db.ReferenceProperty(User) 
 
 class BaseHandler(webapp2.RequestHandler):
     """Provides access to the active Facebook user in self.current_user
@@ -86,11 +91,23 @@ class BaseHandler(webapp2.RequestHandler):
                         access_token=cookie["access_token"]
                     )
                     user.put()
+                    # Store the user's friends (may need to restructure this)
+                    # Removal when user is removed..?
+                    friends = graph.get_connections("me", "friends", fields="name,link")
+                    for fr in friends["data"]:
+                        friend = Friend(
+                          id = str(fr["id"]),
+                          name = str(fr["name"]),
+                          profile_url = str(fr["link"]),
+                          friend_ref = user 
+                        )
+                        friend.put()                
+
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
                     user.put()
                 # User is now logged in
-                self.session["user"] = dict(
+                self.session["user"] = dict( #friends already exist in ds?
                     name=user.name,
                     profile_url=user.profile_url,
                     id=user.id,
