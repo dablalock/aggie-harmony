@@ -2,6 +2,7 @@
 body 
 {
 background-image:url('http://i876.photobucket.com/albums/ab327/nnncharges/kyle_field_zpse31fd924.jpg');
+background-size: cover;
 }
 .jumbotron {
  margin: 130px 0;
