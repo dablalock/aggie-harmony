@@ -146,10 +146,17 @@ class BaseHandler(webapp2.RequestHandler):
 
 class HomeHandler(BaseHandler):
     def get(self):
+        user = self.current_user
+        friends = None
+        if user:
+            # Run a query to retrieve the friends from the datastore
+            q = Friend.all()
+            friends = q.run(limit=10)
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(dict(
             facebook_app_id=auth.FACEBOOK_APP_ID,
-            current_user=self.current_user
+            current_user=user,
+            friends=friends
         )))
 
 
@@ -169,3 +176,4 @@ app = webapp2.WSGIApplication(
     debug=True,
     config=config
 )
+

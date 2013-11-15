@@ -45,6 +45,26 @@
             </ul>
         </div><!-- /.navbar-collapse -->
         </nav>
+
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><h3>Match Results</h3></div>
+            <!--<div class="panel-body"></div>-->
+
+            <!-- List group -->
+            <ul class="list-group">
+                {% for friend in friends %}
+                <li class="list-group-item">
+                    <a href="{{ friend.profile_url }}">
+                        <img src="http://graph.facebook.com/{{ friend.id }}/picture?type=square">
+                        <span class="friend-name">{{ friend.name|escape }}</span>
+                    </a>
+                    <a href="#" class="friend-rating"><i class="fa fa-thumbs-down"></i></a>
+                    <a href="#" class="friend-rating"><i class="fa fa-thumbs-up"></i></a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
 
         {% if not current_user %}
