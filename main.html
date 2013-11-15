@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-        <link href="css/custom.css" rel="stylesheet" type="text/css" />
+        <link href="css/custom.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
         <title>Aggie Harmony</title>
     </head>
     <body>
@@ -51,9 +52,11 @@
         <div class="jumbotron">
             <h1><span class="logo-primary">Aggie</span><span class="logo-secondary">Harmony</span></h1>
             <p class="lead">A midnight yell dating site for aggies.</p>
-            <a class="btn btn-large btn-custom-lighten" onclick="doLogin();return false;" href="#">Log in</a>
+            <a class="btn btn-large btn-custom-lighten" onclick="doLogin();return false;" href="#"><i class="fa fa-facebook-square fa-lg"></i>Log In</a>
         </div>
         {% endif %}
+
+        <i class="fa fa-camera-retro pull-left"></i>
 
         <div id="fb-root"></div>
 
@@ -72,11 +75,7 @@
                 document.getElementById('fb-root').appendChild(e);
             }());
             function doLogin() {  
-                FB.login(function(response) {
-                    if (response.session) {
-                        FB.api('/me',  function(response) {});
-                    }
-                } , {perms:''});
+                FB.login(function(response) {} , {perms:''});
             }
             function doLogout() {  
                 FB.logout(function(response) {});

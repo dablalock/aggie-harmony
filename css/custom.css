@@ -22,6 +22,9 @@ body {
 .jumbotron .lead {
     color: #000;
 }
+.jumbotron .btn i {
+    padding-right: 15px;
+}
 
 /* For a maroon button on the login page */
 .btn-custom-lighten.active {
