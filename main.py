@@ -93,15 +93,15 @@ class BaseHandler(webapp2.RequestHandler):
                     user.put()
                     # Store the user's friends (may need to restructure this)
                     # Removal when user is removed..?
-                    friends = graph.get_connections("me", "friends", fields="name,link")
-                    for fr in friends["data"]:
-                        friend = Friend(
-                          id = str(fr["id"]),
-                          name = str(fr["name"]),
-                          profile_url = str(fr["link"]),
-                          friend_ref = user 
-                        )
-                        friend.put()                
+                    # friends = graph.get_connections("me", "friends", fields="name,link")
+                    # for fr in friends["data"]:
+                    #     friend = Friend(
+                    #       id = str(fr["id"]),
+                    #       name = str(fr["name"]),
+                    #       profile_url = str(fr["link"]),
+                    #       friend_ref = user 
+                    #     )
+                    #     friend.put()                
 
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]

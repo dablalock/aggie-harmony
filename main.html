@@ -3,10 +3,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Bootstrap -->
         <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="css/custom.css" rel="stylesheet" type="text/css" />
         <title>Aggie Harmony</title>
-    <link rel="stylesheet" type="text/css" href="css/home.css" />
     </head>
     <body>
         {% if current_user %}
@@ -33,7 +32,7 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a href="{{ current_user.profile_url }}">Profile</a></li>
-                                <li><a href="/logout">Logout</a></li>
+                                <li><a href="#" onclick="doLogout();return false;">Logout</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -49,12 +48,9 @@
         {% endif %}
 
         {% if not current_user %}
-<!--div id="backstretch" style="left: 0px; top: 0px; position: fixed; overflow: hidden; z-index: -999999; margin: 0px; padding: 0px; height: 136px; width: 1073px;">
-<img style="position: absolute; margin: 0px; padding: 0px; border: medium none; z-index: -999999; max-width: none; width: 1073px; height: 757.312px; left: 0px; top: -310.656px;" src="http://postimg.org/image/vd3mn1jd1/">
-</div-->
         <div class="jumbotron">
-            <h1 style="color:#500000">Aggie<span style="color:black">Harmony</span></h1>
-            <p class="lead" style="color:black">A midnight yell dating site for aggies.</p>
+            <h1><span class="logo-primary">Aggie</span><span class="logo-secondary">Harmony</span></h1>
+            <p class="lead">A midnight yell dating site for aggies.</p>
             <a class="btn btn-large btn-custom-lighten" onclick="doLogin();return false;" href="#">Log in</a>
         </div>
         {% endif %}
@@ -63,27 +59,27 @@
 
         <script>
             window.fbAsyncInit = function() {
-            FB.init({appId: '{{ facebook_app_id }}', status: true, cookie: true, xfbml: true});
-            FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
-            {% if current_user %} window.location = "/logout" {% else %} window.location.reload(); {% endif %}
-            });
+                FB.init({appId: '{{ facebook_app_id }}', status: true, cookie: true, xfbml: true});
+                FB.Event.subscribe('{% if current_user %}auth.logout{% else %}auth.login{% endif %}', function(response) {
+                    {% if current_user %} window.location = "/logout" {% else %} window.location.reload(); {% endif %}
+                });
             };
             (function() {
-            var e = document.createElement('script');
-            e.type = 'text/javascript';
-            e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-            e.async = true;
-            document.getElementById('fb-root').appendChild(e);
+                var e = document.createElement('script');
+                e.type = 'text/javascript';
+                e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+                e.async = true;
+                document.getElementById('fb-root').appendChild(e);
             }());
             function doLogin() {  
                 FB.login(function(response) {
                     if (response.session) {
-                        FB.api('/me',  function(response) {
-                            alert('Welcome ' + response.name);
-                            alert('Full details: ' + JSON.stringify(response));
-                        });
+                        FB.api('/me',  function(response) {});
                     }
                 } , {perms:''});
+            }
+            function doLogout() {  
+                FB.logout(function(response) {});
             }
         </script>
         <script src="http://code.jquery.com/jquery.js"></script>
