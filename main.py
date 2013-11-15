@@ -49,6 +49,7 @@ class User(db.Model):
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
     access_token = db.StringProperty(required=True)
+    friend_list = db.StringListProperty(required=True)
 
 class Friend(db.Model):
     id = db.StringProperty(required=True)
@@ -89,21 +90,21 @@ class BaseHandler(webapp2.RequestHandler):
                         id=str(profile["id"]),
                         name=profile["name"],
                         profile_url=profile["link"],
-                        access_token=cookie["access_token"]
+                        access_token=cookie["access_token"],
+                        friend_list=[]
                     )
-                    user.put()
-
                     # Store the user's friends
                     friends = graph.get_connections("me", "friends", fields="name,link")
                     for friend in friends["data"]:
                         f = Friend(
                             key_name=str(friend["id"]),
-                            parent=user,
                             id=str(friend["id"]),
                             name=friend["name"],
                             profile_url=friend["link"]
                         )
+                        user.friend_list.append(str(friend["id"]))
                         f.put()                
+                    user.put()
 
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
@@ -113,7 +114,8 @@ class BaseHandler(webapp2.RequestHandler):
                     name=user.name,
                     profile_url=user.profile_url,
                     id=user.id,
-                    access_token=user.access_token
+                    access_token=user.access_token,
+                    friend_list=user.friend_list
                 )
                 return self.session.get("user")
         return None

@@ -1,14 +1,14 @@
 /* Background image */
 body {
-    background-image:url('http://i876.photobucket.com/albums/ab327/nnncharges/kyle_field_zpse31fd924.jpg');
+    background-image:url('../img/kyle_field.jpg');
     background-size: cover;
 }
 
 /* Main text on login page */
 .jumbotron {
-    margin: 130px 0;
+    margin: 30px 0;
     text-align: center;
-    background-color:rgba(238,238,238,0.7);
+    background-color:rgba(238,238,238,0);
 }
 .jumbotron h1 {
     font-size: 84px;
