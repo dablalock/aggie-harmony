@@ -50,11 +50,12 @@ class User(db.Model):
     profile_url = db.StringProperty(required=True)
     access_token = db.StringProperty(required=True)
 
-class Friend(db.Model): #Minimal for interface checkpoint
+class Friend(db.Model):
     id = db.StringProperty(required=True)
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
-    friend_ref = db.ReferenceProperty(User) 
 
 class BaseHandler(webapp2.RequestHandler):
     """Provides access to the active Facebook user in self.current_user
@@ -91,23 +92,24 @@ class BaseHandler(webapp2.RequestHandler):
                         access_token=cookie["access_token"]
                     )
                     user.put()
-                    # Store the user's friends (may need to restructure this)
-                    # Removal when user is removed..?
-                    # friends = graph.get_connections("me", "friends", fields="name,link")
-                    # for fr in friends["data"]:
-                    #     friend = Friend(
-                    #       id = str(fr["id"]),
-                    #       name = str(fr["name"]),
-                    #       profile_url = str(fr["link"]),
-                    #       friend_ref = user 
-                    #     )
-                    #     friend.put()                
+
+                    # Store the user's friends
+                    friends = graph.get_connections("me", "friends", fields="name,link")
+                    for friend in friends["data"]:
+                        f = Friend(
+                            key_name=str(friend["id"]),
+                            parent=user,
+                            id=str(friend["id"]),
+                            name=friend["name"],
+                            profile_url=friend["link"]
+                        )
+                        f.put()                
 
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
                     user.put()
                 # User is now logged in
-                self.session["user"] = dict( #friends already exist in ds?
+                self.session["user"] = dict(
                     name=user.name,
                     profile_url=user.profile_url,
                     id=user.id,
@@ -147,15 +149,6 @@ class HomeHandler(BaseHandler):
             facebook_app_id=auth.FACEBOOK_APP_ID,
             current_user=self.current_user
         )))
-
-    def post(self):
-        url = self.request.get('url')
-        file = urllib2.urlopen(url)
-        graph = facebook.GraphAPI(self.current_user['access_token'])
-        response = graph.put_photo(file, "Test Image")
-        photo_url = ("http://www.facebook.com/"
-                     "photo.php?fbid={0}".format(response['id']))
-        self.redirect(str(photo_url))
 
 
 class LogoutHandler(BaseHandler):
