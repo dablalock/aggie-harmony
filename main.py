@@ -49,7 +49,10 @@ class User(db.Model):
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
     access_token = db.StringProperty(required=True)
-    friend_list = db.StringListProperty(required=True)
+
+    @property
+    def friends(self):
+        return Friend.gql("WHERE users = :1", self.key())
 
 class Friend(db.Model):
     id = db.StringProperty(required=True)
@@ -61,6 +64,7 @@ class Friend(db.Model):
     music = db.StringProperty()
     movies = db.StringProperty()
     books = db.StringProperty()
+    users = db.ListProperty(db.Key)
 
 class BaseHandler(webapp2.RequestHandler):
     """Provides access to the active Facebook user in self.current_user
@@ -94,23 +98,24 @@ class BaseHandler(webapp2.RequestHandler):
                         id=str(profile["id"]),
                         name=profile["name"],
                         profile_url=profile["link"],
-                        access_token=cookie["access_token"],
-                        friend_list=[]
+                        access_token=cookie["access_token"]
                     )
+                    user.put()
+
                     # Store the user's friends
                     friends = graph.get_connections("me", "friends", fields="name,link,gender,bio")
                     for friend in friends["data"]:
-                        f = Friend(
-                            key_name=str(friend["id"]),
-                            id=str(friend["id"]),
-                            #name=friend["name"],
-                            name=str(friend),
-                            profile_url=friend["link"],
-                            #bio = friend["bio"] #if friend["gender"] else "None provided!" 
-                        )
-                        user.friend_list.append(str(friend["id"]))
+                        f = Friend.gql("WHERE id = :1", str(friend["id"])).get()
+                        if not f:
+                            f = Friend(
+                                key_name=str(friend["id"]),
+                                id=str(friend["id"]),
+                                name=friend["name"],
+                                profile_url=friend["link"],
+                                users=[]
+                            )
+                        f.users.append(user.key())
                         f.put()                
-                    user.put()
 
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
@@ -120,8 +125,7 @@ class BaseHandler(webapp2.RequestHandler):
                     name=user.name,
                     profile_url=user.profile_url,
                     id=user.id,
-                    access_token=user.access_token,
-                    friend_list=user.friend_list
+                    access_token=user.access_token
                 )
                 return self.session.get("user")
         return None
@@ -155,9 +159,8 @@ class HomeHandler(BaseHandler):
         user = self.current_user
         friends = None
         if user:
-            # Run a query to retrieve the friends from the datastore
-            q = Friend.all()
-            friends = q.run(limit=10)
+            u = User.gql("WHERE id = :1", user["id"]).get()
+            friends = u.friends.fetch(limit=10)
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(dict(
             facebook_app_id=auth.FACEBOOK_APP_ID,

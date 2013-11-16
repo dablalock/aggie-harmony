@@ -119,11 +119,9 @@ nav .nav li a img {
     border-radius: 6px;
 }
 .friend-name {
-    font-size: 1.5em;
     padding: 10px 5px
 }
 .friend-rating {
     float: right;
-    font-size: 1.5em;
     padding: 10px 5px;
 }
