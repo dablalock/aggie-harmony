@@ -57,6 +57,10 @@ class Friend(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
+    bio = db.StringProperty()
+    music = db.StringProperty()
+    movies = db.StringProperty()
+    books = db.StringProperty()
 
 class BaseHandler(webapp2.RequestHandler):
     """Provides access to the active Facebook user in self.current_user
@@ -94,13 +98,15 @@ class BaseHandler(webapp2.RequestHandler):
                         friend_list=[]
                     )
                     # Store the user's friends
-                    friends = graph.get_connections("me", "friends", fields="name,link")
+                    friends = graph.get_connections("me", "friends", fields="name,link,gender,bio")
                     for friend in friends["data"]:
                         f = Friend(
                             key_name=str(friend["id"]),
                             id=str(friend["id"]),
-                            name=friend["name"],
-                            profile_url=friend["link"]
+                            #name=friend["name"],
+                            name=str(friend),
+                            profile_url=friend["link"],
+                            #bio = friend["bio"] #if friend["gender"] else "None provided!" 
                         )
                         user.friend_list.append(str(friend["id"]))
                         f.put()                
