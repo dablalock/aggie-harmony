@@ -119,9 +119,19 @@ nav .nav li a img {
     border-radius: 6px;
 }
 .friend-name {
-    padding: 10px 5px
+    padding: 10px 5px;
+    font-size: 20px;
 }
 .friend-rating {
     float: right;
     padding: 10px 5px;
+}
+.friend-bio{
+    color: #500000;
+    font-size: 12px;
+    font-style: italic;
+}
+.friend-interests{
+    font-size: 11px;
+    padding-left: 10px;
 }

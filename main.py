@@ -103,8 +103,8 @@ class BaseHandler(webapp2.RequestHandler):
                     user.put()
 
                     # Store the user's friends
-                    friends = graph.get_connections("me", "friends", fields="name,link,gender,bio")
-                    for friend in friends["data"]:
+                    friendz = graph.get_connections("me", "friends", fields="name,link,gender,bio")
+                    for friend in friendz["data"]:
                         f = Friend.gql("WHERE id = :1", str(friend["id"])).get()
                         if not f:
                             f = Friend(
@@ -112,6 +112,13 @@ class BaseHandler(webapp2.RequestHandler):
                                 id=str(friend["id"]),
                                 name=friend["name"],
                                 profile_url=friend["link"],
+                                bio=friend["bio"],
+                                music = facebook.make_conn_str(graph.get_connections(
+                                    friend["id"], "music", fields="id,name")), 
+                                movies = facebook.make_conn_str(graph.get_connections(
+                                    friend["id"], "movies", fields="id,name")), 
+                                books = facebook.make_conn_str(graph.get_connections(
+                                    friend["id"], "books", fields="id,name")), 
                                 users=[]
                             )
                         f.users.append(user.key())
@@ -185,4 +192,3 @@ app = webapp2.WSGIApplication(
     debug=True,
     config=config
 )
-

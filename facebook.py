@@ -554,3 +554,14 @@ def get_app_access_token(app_id, app_secret):
         file.close()
 
     return result
+
+# Make a nice, readable display form for 
+# connections data obtained from API
+def make_conn_str(conns):
+    conn_str = ""
+    for c in conns["data"][:3]:
+        conn_str += c["name"] 
+        conn_str += ", " 
+    return conn_str[:-2]
+
+
