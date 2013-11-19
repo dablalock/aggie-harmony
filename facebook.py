@@ -567,10 +567,9 @@ def make_conn_str(conns):
 # Returns true if given friend is
 # an Aggie (not caring about class year
 # now) and single...or no relationship provided
-#def feasible_friend(edu, rel_status):
-def feasible_friend(edu):
-    #if not (rel_status == "Single" or rel_status == None):
-    #    return False
+def feasible_friend(edu, rel_status):
+    if not (rel_status == "Single" or rel_status == None):
+        return False
     if edu is not None:
         for e in edu: 
             # There doesn't seem to be a single, definitive ID for TAMU

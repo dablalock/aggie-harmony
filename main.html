@@ -73,25 +73,21 @@
                         </div>
                         <div id="{{ friend.id }}" class="panel-collapse collapse">
                         <div class="panel-body"> 
+                          {% if friend.bio %}
                           <p><span class="friend-bio">"{{ friend.bio }}"</span></p>
+                          {% endif %}
                           <br>
                           {% if friend.music != "" %}
                           <p><i class="fa fa-music"></i>
                           <span class="friend-interests">{{ friend.music }}</span></p>
-                          {% else %}
-                          <br>
                           {% endif %}
                           {% if friend.movies != "" %}
                           <p><i class="fa fa-film"></i>
                           <span class="friend-interests">{{ friend.movies }}</span></p>
-                          {% else %}
-                          <br>
                           {% endif %}
                           {% if friend.books != "" %}
                           <p><i class="fa fa-book"></i>
                           <span class="friend-interests">{{ friend.books }}</span></p>
-                          {% else %}
-                          <br>
                           {% endif %}
                         </div>
                       </div>
