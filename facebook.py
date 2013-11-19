@@ -571,13 +571,14 @@ def make_conn_str(conns):
 def feasible_friend(edu):
     #if not (rel_status == "Single" or rel_status == None):
     #    return False
-    for e in edu: 
-        # There doesn't seem to be a single, definitive ID for TAMU
-        if(e["school"]["name"] == "Texas A&M" or
-           e["school"]["name"] == "Texas A&M University" or
-           e["school"]["name"] == "TAMU"):
-            return True    
-    return False
+    if edu is not None:
+        for e in edu: 
+            # There doesn't seem to be a single, definitive ID for TAMU
+            if(e["school"]["name"] == "Texas A&M" or
+               e["school"]["name"] == "Texas A&M University" or
+               e["school"]["name"] == "TAMU"):
+                return True    
+        return False
 
 
 

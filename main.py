@@ -121,7 +121,7 @@ class BaseHandler(webapp2.RequestHandler):
                         # and not already in relationship. Non-provided relationship
                         # assumed single!
                         #if facebook.feasible_friend(friend["education"], friend["relationship_status"]):
-                        if facebook.feasible_friend(friend["education"]): # keyerror on rel_status?!?
+                        if facebook.feasible_friend(friend.get("education", None)): # keyerror on rel_status?!?
                             f = Friend.gql("WHERE id = :1", str(friend["id"])).get()
                             if not f:
                                 f = Friend(
@@ -129,7 +129,7 @@ class BaseHandler(webapp2.RequestHandler):
                                     id=str(friend["id"]),
                                     name=friend["name"],
                                     profile_url=friend["link"],
-                                    bio=friend["bio"],
+                                    bio=friend.get("bio", ""),
                                     music = facebook.make_conn_str(graph.get_connections(
                                         friend["id"], "music", fields="id,name")), 
                                     movies = facebook.make_conn_str(graph.get_connections(
