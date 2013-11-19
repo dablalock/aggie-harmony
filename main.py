@@ -48,6 +48,10 @@ class User(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
+    bio = db.StringProperty(multiline=True)
+    music = db.StringProperty()
+    movies = db.StringProperty()
+    books = db.StringProperty()
     access_token = db.StringProperty(required=True)
 
     @property
@@ -60,7 +64,7 @@ class Friend(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
-    bio = db.StringProperty()
+    bio = db.StringProperty(multiline=True)
     music = db.StringProperty()
     movies = db.StringProperty()
     books = db.StringProperty()
@@ -94,10 +98,17 @@ class BaseHandler(webapp2.RequestHandler):
                     graph = facebook.GraphAPI(cookie["access_token"])
                     profile = graph.get_object("me")
                     user = User(
-                        key_name=str(profile["id"]),
-                        id=str(profile["id"]),
-                        name=profile["name"],
-                        profile_url=profile["link"],
+                        key_name = str(profile["id"]),
+                        id = str(profile["id"]),
+                        name = profile["name"],
+                        profile_url = profile["link"],
+                        bio = profile["bio"],
+                        music = facebook.make_conn_str(graph.get_connections(
+                            profile["id"], "music", fields="id,name")),
+                        movies = facebook.make_conn_str(graph.get_connections(
+                            profile["id"], "movies", fields="id,name")),
+                        books = facebook.make_conn_str(graph.get_connections(
+                            profile["id"], "books", fields="id,name")),
                         access_token=cookie["access_token"]
                     )
                     user.put()
@@ -137,6 +148,10 @@ class BaseHandler(webapp2.RequestHandler):
                 self.session["user"] = dict(
                     name=user.name,
                     profile_url=user.profile_url,
+                    bio=user.bio,
+                    music=user.music,
+                    movies=user.movies,
+                    books=user.books,
                     id=user.id,
                     access_token=user.access_token
                 )
