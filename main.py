@@ -103,26 +103,32 @@ class BaseHandler(webapp2.RequestHandler):
                     user.put()
 
                     # Store the user's friends
-                    friendz = graph.get_connections("me", "friends", fields="name,link,gender,bio")
+                    friendz = graph.get_connections("me", "friends", 
+                        fields="name,link,gender,bio,education,relationship_status")
                     for friend in friendz["data"]:
-                        f = Friend.gql("WHERE id = :1", str(friend["id"])).get()
-                        if not f:
-                            f = Friend(
-                                key_name=str(friend["id"]),
-                                id=str(friend["id"]),
-                                name=friend["name"],
-                                profile_url=friend["link"],
-                                bio=friend["bio"],
-                                music = facebook.make_conn_str(graph.get_connections(
-                                    friend["id"], "music", fields="id,name")), 
-                                movies = facebook.make_conn_str(graph.get_connections(
-                                    friend["id"], "movies", fields="id,name")), 
-                                books = facebook.make_conn_str(graph.get_connections(
-                                    friend["id"], "books", fields="id,name")), 
-                                users=[]
-                            )
-                        f.users.append(user.key())
-                        f.put()                
+                        # For now, don't bother constructing friend unless A&M student 
+                        # and not already in relationship. Non-provided relationship
+                        # assumed single!
+                        #if facebook.feasible_friend(friend["education"], friend["relationship_status"]):
+                        if facebook.feasible_friend(friend["education"]): # keyerror on rel_status?!?
+                            f = Friend.gql("WHERE id = :1", str(friend["id"])).get()
+                            if not f:
+                                f = Friend(
+                                    key_name=str(friend["id"]),
+                                    id=str(friend["id"]),
+                                    name=friend["name"],
+                                    profile_url=friend["link"],
+                                    bio=friend["bio"],
+                                    music = facebook.make_conn_str(graph.get_connections(
+                                        friend["id"], "music", fields="id,name")), 
+                                    movies = facebook.make_conn_str(graph.get_connections(
+                                        friend["id"], "movies", fields="id,name")), 
+                                    books = facebook.make_conn_str(graph.get_connections(
+                                        friend["id"], "books", fields="id,name")), 
+                                    users=[]
+                                )
+                            f.users.append(user.key())
+                            f.put()                
 
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
