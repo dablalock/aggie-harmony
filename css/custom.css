@@ -120,7 +120,7 @@ nav .nav li a img {
 }
 .friend-name {
     padding: 10px 5px;
-    font-size: 20px;
+    font-size: 24px;
 }
 .friend-rating {
     float: right;
@@ -135,3 +135,16 @@ nav .nav li a img {
     font-size: 11px;
     padding-left: 10px;
 }
+
+.panel-custom{
+    width: 100%;
+    border: 0px;
+    padding-bottom: 3px;
+}
+
+.panel-title{
+    font-size: 14px;
+    color: 3D3D3D;  
+}
+
+
