@@ -48,10 +48,10 @@ class User(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
-    bio = db.StringProperty(multiline=True)
-    music = db.StringProperty()
-    movies = db.StringProperty()
-    books = db.StringProperty()
+    bio = db.TextProperty()
+    music = db.TextProperty()
+    movies = db.TextProperty()
+    books = db.TextProperty()
     access_token = db.StringProperty(required=True)
 
     @property
@@ -64,10 +64,10 @@ class Friend(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     name = db.StringProperty(required=True)
     profile_url = db.StringProperty(required=True)
-    bio = db.StringProperty(multiline=True)
-    music = db.StringProperty()
-    movies = db.StringProperty()
-    books = db.StringProperty()
+    bio = db.TextProperty()
+    music = db.TextProperty()
+    movies = db.TextProperty()
+    books = db.TextProperty()
     users = db.ListProperty(db.Key)
 
 class BaseHandler(webapp2.RequestHandler):

@@ -577,7 +577,7 @@ def feasible_friend(edu, rel_status):
                e["school"]["name"] == "Texas A&M University" or
                e["school"]["name"] == "TAMU"):
                 return True    
-        return False
+    return False
 
 
 

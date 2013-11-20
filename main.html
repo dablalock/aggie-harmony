@@ -122,7 +122,7 @@
                 document.getElementById('fb-root').appendChild(e);
             }());
             function doLogin() {  
-                FB.login(function(response) {} , {perms:'user_about_me,friends_about_me,user_likes,friends_likes,user_relationship_details,friends_relationship_details,user_relationships,friends_relationships'});
+                FB.login(function(response) {} , {perms:'user_about_me,friends_about_me,user_likes,friends_likes,user_relationship_details,friends_relationship_details,user_relationships,friends_relationships, user_education_history, friends_education_history'});
             }
             function doLogout() {  
                 FB.logout(function(response) {});
