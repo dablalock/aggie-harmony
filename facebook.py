@@ -558,11 +558,12 @@ def get_app_access_token(app_id, app_secret):
 # Make a nice, readable display form for 
 # connections data obtained from API
 def make_conn_str(conns):
-    conn_str = ""
-    for c in conns["data"][:3]:
-        conn_str += c["name"] 
-        conn_str += ", " 
-    return conn_str[:-2]
+    if conns is not None:    
+        conn_str = ""
+        for c in conns["data"]:
+            conn_str += c["name"] 
+            conn_str += ", " 
+        return conn_str[:-2]
 
 # Returns true if given friend is
 # an Aggie (not caring about class year

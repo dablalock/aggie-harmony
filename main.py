@@ -102,20 +102,17 @@ class BaseHandler(webapp2.RequestHandler):
                         id = str(profile["id"]),
                         name = profile["name"],
                         profile_url = profile["link"],
-                        bio = profile["bio"],
-                        music = facebook.make_conn_str(graph.get_connections(
-                            profile["id"], "music", fields="id,name")),
-                        movies = facebook.make_conn_str(graph.get_connections(
-                            profile["id"], "movies", fields="id,name")),
-                        books = facebook.make_conn_str(graph.get_connections(
-                            profile["id"], "books", fields="id,name")),
+                        bio = profile.get("bio", None),
+                        music = facebook.make_conn_str(profile.get("music", None)),  
+                        movies = facebook.make_conn_str(profile.get("movies", None)),  
+                        books = facebook.make_conn_str(profile.get("books", None)),  
                         access_token=cookie["access_token"]
                     )
                     user.put()
 
                     # Store the user's friends
                     friendz = graph.get_connections("me", "friends", 
-                        fields="name,link,gender,bio,education,relationship_status")
+                        fields="name,link,gender,bio,education,relationship_status,music.limit(20),movies.limit(20),books.limit(20)")
                     for friend in friendz["data"]:
                         # For now, don't bother constructing friend unless A&M student 
                         # and not already in relationship. Non-provided relationship
@@ -129,12 +126,9 @@ class BaseHandler(webapp2.RequestHandler):
                                     name=friend["name"],
                                     profile_url=friend["link"],
                                     bio=friend.get("bio", None),
-                                    music = facebook.make_conn_str(graph.get_connections(
-                                        friend["id"], "music", fields="id,name")), 
-                                    movies = facebook.make_conn_str(graph.get_connections(
-                                        friend["id"], "movies", fields="id,name")), 
-                                    books = facebook.make_conn_str(graph.get_connections(
-                                        friend["id"], "books", fields="id,name")), 
+                                    music = facebook.make_conn_str(friend.get("music", None)),  
+                                    movies = facebook.make_conn_str(friend.get("movies", None)),  
+                                    books = facebook.make_conn_str(friend.get("books", None)),  
                                     users=[]
                                 )
                             f.users.append(user.key())
@@ -187,7 +181,7 @@ class HomeHandler(BaseHandler):
         friends = None
         if user:
             u = User.gql("WHERE id = :1", user["id"]).get()
-            friends = u.friends.fetch(limit=10)
+            friends = u.friends.fetch(limit=1000)
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(dict(
             facebook_app_id=auth.FACEBOOK_APP_ID,
