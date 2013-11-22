@@ -134,9 +134,6 @@ class BaseHandler(webapp2.RequestHandler):
                                 )
                             f.users.append(user.key())
                             f.put()                
-                    scorer = corealg.Scorer(user, "music")
-                    scorer.GatherFriendsData()
-                    scorer.PrepareInvertedIndex(True) 
 
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
@@ -186,6 +183,10 @@ class HomeHandler(BaseHandler):
         if user:
             u = User.gql("WHERE id = :1", user["id"]).get()
             friends = u.friends.fetch(limit=1000)
+            scorer = corealg.Scorer(user, friends)
+            scorer.GatherFriendsData()
+            scorer.PrepareInvertedIndexes()
+
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(dict(
             facebook_app_id=auth.FACEBOOK_APP_ID,

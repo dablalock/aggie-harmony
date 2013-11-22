@@ -3,53 +3,71 @@
 import re
 import math
 import porter2
+import main
 
 class Scorer: 
-    def __init__(self, user, data_type):
+    def __init__(self, user, friends):
         self.user = user
-        self.data_type = data_type #string
-        self.friends_data ={} # corpus to search over
-        self.inverted_index = {} # Key = term; val = dict with 3 
-                                 # keys: df, idf, and list of doc ids
+        self.friends = friends
+        
+        # Inverted indexes
+        self.bio_index = {} # Key = term; val = dict with 3 keys: doc_ids (list of friends with this term), df, and idf   
+        self.music_index = {} 
+        self.movies_index = {}
+        self.books_index = {}
 
-        #self.stop_list = [] # for optional stop list checks?
-        self.friend_vecs = {}  # key=docid; val=dict with k=term, v=tf-idf score
+        # The "corpuses": key = friend id; val = raw string of liked items as stored in DS
+        self.bio_docs = {}
+        self.music_docs = {}
+        self.movies_docs = {}
+        self.books_docs = {}
+
+        # Friends' interests in weighted vector form
+        # key=docid; val=dict with k=term, v=tf-idf score
+        self.bio_vecs = {}
+        self.music_vecs = {}
+        self.movies_vecs = {}
+        self.books_vecs = {}
 
     def GatherFriendsData(self): # fill friends_data dict, where key=id; val=full text of given attribute
-        wtf = getattr(self.user, self.data_type)
-        print "WTF?!?! " + str(wtf)
-        print str(dir(self.user))
-        for friend in self.user.friends:
-            print "LOLOLOL"
-            print str(dir(friends))
-            self.friends_data[friend.id] = getattr(friend, self.data_type)
-        print "gather friends data..."
-        print self.friends_data
+        for friend in self.friends:
+            self.bio_docs[friend.id] = friend.bio
+            self.music_docs[friend.id] = friend.music
+            self.movies_docs[friend.id] = friend.movies
+            self.books_docs[friend.id] = friend.books
 
-    def PrepareInvertedIndex(self, stem):
-        for k, doc in self.friends_data.items(): # k = assigned id number of doc
-            tokens = re.findall("[\w']+", doc.lower())
-            if stem:
-                tokens = [porter2.stem(token) for token in tokens]
-            #if remove_stops:
-            #    tokens = [st for st in tokens if st not in self.stop_list]
+    def PrepareInvertedIndexes(self):
+        self.PrepareInvertedIndex("bio_docs", "bio_index", True)    
+        self.PrepareInvertedIndex("music_docs", "music_index", True)    
+        self.PrepareInvertedIndex("movies_docs", "movies_index", True)    
+        self.PrepareInvertedIndex("books_docs", "books_index", True)    
+
+    def PrepareInvertedIndex(self, corpus_name, index_name, stem): # index_type string identifies whether bio, music, etc.
+        inverted_index = getattr(self, index_name)   
+        corpus = getattr(self, corpus_name) 
+        
+        for k, doc in corpus.items(): # k = assigned id number of doc (friend id in this case)
+            if doc is not None:
+                tokens = re.findall("[\w']+", doc.lower())
+                if stem:
+                    tokens = [porter2.stem(token) for token in tokens]
             
-            for s in tokens:
-                if s not in self.inverted_index: 
-                    self.inverted_index[s] = {}
-                    self.inverted_index[s]["doc_ids"] = []
-                    self.inverted_index[s]["df"] = 0
+                for s in tokens:
+                    if s not in inverted_index: 
+                        inverted_index[s] = {}
+                        inverted_index[s]["doc_ids"] = []
+                        inverted_index[s]["df"] = 0
                 
-                if k not in self.inverted_index[s]["doc_ids"]:
-                    self.inverted_index[s]["df"] += 1
-                self.inverted_index[s]["doc_ids"].append(k)
+                    if k not in inverted_index[s]["doc_ids"]:
+                        inverted_index[s]["df"] += 1
+                    inverted_index[s]["doc_ids"].append(k)
 
         # Store the idfs
-        N = float(len(self.friends_data))
-        for term, val in self.inverted_index.items():
-            self.inverted_index[term]["idf"] =  \
-            math.log((N/float(self.inverted_index[term]["df"])), 2.0) 
-        print "################### II ################"
-        print self.inverted_index
+        N = float(len(corpus))
+        for term, val in inverted_index.items():
+            inverted_index[term]["idf"] =  \
+            math.log((N/float(inverted_index[term]["df"])), 2.0) 
+        print "################### Inverted Index for " + str(corpus_name) +" ################"
+        print inverted_index
 
 
