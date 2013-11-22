@@ -34,6 +34,7 @@ import webapp2
 import os
 import jinja2
 import urllib2
+import corealg
 
 from google.appengine.ext import db
 from webapp2_extras import sessions
@@ -133,6 +134,9 @@ class BaseHandler(webapp2.RequestHandler):
                                 )
                             f.users.append(user.key())
                             f.put()                
+                    scorer = corealg.Scorer(user, "music")
+                    scorer.GatherFriendsData()
+                    scorer.PrepareInvertedIndex(True) 
 
                 elif user.access_token != cookie["access_token"]:
                     user.access_token = cookie["access_token"]
