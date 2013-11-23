@@ -186,6 +186,7 @@ class HomeHandler(BaseHandler):
             scorer = corealg.Scorer(user, friends)
             scorer.GatherFriendsData()
             scorer.PrepareInvertedIndexes()
+            scorer.MakeAllDocVectors()
 
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(dict(

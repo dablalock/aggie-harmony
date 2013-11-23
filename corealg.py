@@ -70,4 +70,26 @@ class Scorer:
         print "################### Inverted Index for " + str(corpus_name) +" ################"
         print inverted_index
 
+    def MakeAllDocVectors(self):
+        self.MakeDocVectorsForAttr("bio_docs", "bio_index", "bio_vecs")
+        self.MakeDocVectorsForAttr("music_docs", "music_index", "music_vecs")
+        self.MakeDocVectorsForAttr("movies_docs", "movies_index", "movies_vecs")
+        self.MakeDocVectorsForAttr("books_docs", "books_index", "books_vecs")
+
+    def MakeDocVectorsForAttr(self, corpus_name, index_name, vecs_name):
+        inverted_index = getattr(self, index_name)
+        vectors = getattr(self, vecs_name)
+        for k in getattr(self, corpus_name).keys():
+            vectors[k] = {}
+            for term in inverted_index:
+                raw_tf = inverted_index[term]["doc_ids"].count(k)
+                weighted_tf = 0.0
+                if raw_tf > 0:
+                    weighted_tf = 1.0 + math.log(float(raw_tf), 2.0)
+                vectors[k][term] = weighted_tf * inverted_index[term]["idf"] 
+        print "****DOC VECTORS***"
+        print vectors                
+
+
+
 
