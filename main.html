@@ -61,7 +61,7 @@
                         <span class="friend-name">{{ friend.name|escape }}</span>
                     </a>
                     <a href="#" class="friend-rating"><i class="fa fa-thumbs-down"></i></a>
-                    <a href="#" class="friend-rating"><i class="fa fa-thumbs-up"></i></a>
+                    <a href="#" onclick="sendMessage({{ friend.id }});return false;"class="friend-rating"><i class="fa fa-thumbs-up"></i></a>
                     <br><br>
                       <div class="panel panel-custom">
                         <div class="panel-heading">
@@ -126,6 +126,13 @@
             }
             function doLogout() {  
                 FB.logout(function(response) {});
+            }
+            function sendMessage(friendID) {
+                FB.ui({
+                    method: 'send',
+                    link: 'http://en.wikipedia.org/wiki/Midnight_Yell_Practice', //link required for some reason
+                    to: friendID,
+                });
             }
         </script>
         <script src="http://code.jquery.com/jquery.js"></script>
