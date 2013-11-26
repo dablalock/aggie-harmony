@@ -5,6 +5,28 @@ import math
 import porter2
 import main
 
+def Tokenize(text, stem):
+    tokens = re.findall("[\w']+", text.lower())
+    if stem:
+        tokens = [porter2.stem(token) for token in tokens]
+    return tokens
+
+def EuclideanLength(v):
+    sum_sqs = 0.0
+    for term, val in v.iteritems():
+        sum_sqs += (val**2)  
+    return math.sqrt(sum_sqs)
+
+def DotProduct(v1, v2):
+    dot_prod = 0.0
+    for term, val in v1.iteritems():
+        # Assuming key-error proof! ... 
+        dot_prod += val * v2[term]
+    return dot_prod
+
+def CosineSim(v1, v2):
+    return DotProduct(v1, v2) / (EuclideanLength(v1) * EuclideanLength(v2))
+
 class Scorer: 
     def __init__(self, user, friends):
         self.user = user
@@ -48,9 +70,10 @@ class Scorer:
         
         for k, doc in corpus.items(): # k = assigned id number of doc (friend id in this case)
             if doc is not None:
-                tokens = re.findall("[\w']+", doc.lower())
-                if stem:
-                    tokens = [porter2.stem(token) for token in tokens]
+                tokens = Tokenize(doc, stem)
+                #tokens = re.findall("[\w']+", doc.lower())
+                #if stem:
+                #    tokens = [porter2.stem(token) for token in tokens]
             
                 for s in tokens:
                     if s not in inverted_index: 
@@ -67,8 +90,8 @@ class Scorer:
         for term, val in inverted_index.items():
             inverted_index[term]["idf"] =  \
             math.log((N/float(inverted_index[term]["df"])), 2.0) 
-        print "################### Inverted Index for " + str(corpus_name) +" ################"
-        print inverted_index
+        #print "################### Inverted Index for " + str(corpus_name) +" ################"
+        #print inverted_index
 
     def MakeAllDocVectors(self):
         self.MakeDocVectorsForAttr("bio_docs", "bio_index", "bio_vecs")
@@ -87,9 +110,52 @@ class Scorer:
                 if raw_tf > 0:
                     weighted_tf = 1.0 + math.log(float(raw_tf), 2.0)
                 vectors[k][term] = weighted_tf * inverted_index[term]["idf"] 
-        print "****DOC VECTORS***"
-        print vectors                
+        #print "****DOC VECTORS***"
+        #print vectors                
 
-
-
-
+    def DoRanking(self):
+        #mutual_fields = 0
+        print "TYPES OF USER AND FRIENDS: " + str(type(self.user)) + " and " + str(type(self.friends))
+        for friend in self.friends:
+            mutual_fields = 0
+            # condense this...?
+            bio_sim = 0.0
+            if self.user.bio is not None and friend.bio is not None:
+                mutual_fields += 1
+                # Building queries with raw tfs
+                bio_qry = dict.fromkeys(self.bio_index, 0)
+                for token in Tokenize(self.user.bio):
+                    if token in self.bio_index:
+                        bio_qry[token] += 1            
+                bio_sim = CosineSim(bio_qry, self.bio_vecs[friend.id])    
+            
+            music_sim = 0.0
+            if self.user.music is not None and friend.music is not None:
+                mutual_fields += 1
+                music_qry = dict.fromkeys(self.music_index, 0)
+                for token in Tokenize(self.user.music):
+                    if token in self.music_index:
+                        music_qry[token] += 1            
+                music_sim = CosineSim(music_qry, self.music_vecs[friend.id])    
+            
+            movies_sim = 0.0
+            if self.user.movies is not None and friend.movies is not None:
+                mutual_fields += 1
+                movies_qry = dict.fromkeys(self.movies_index, 0)
+                for token in Tokenize(self.user.movies):
+                    if token in self.movies_index:
+                        movies_qry[token] += 1
+                movies_sim = CosineSim(movies_qry, self.movies_vecs[friend.id])    
+            
+            books_sim = 0.0
+            if self.user.books is not None and friend.books is not None:
+                mutual_fields += 1
+                books_qry = dict.fromkeys(self.books_index, 0)
+                for token in Tokenize(self.user.books):
+                    if token in self.books_index:
+                        books_qry[token] += 1
+                books_sim = CosineSim(books_qry, self.books_vecs[friend.id])    
+                    
+            
+            overall_sim = (1.0 / mutual_fields) * (bio_sim + music_sim + movies_sim + books_sim)
+            print "SIM SCORE FOR " + str(friend.name) + ": " + str(overall_sim)

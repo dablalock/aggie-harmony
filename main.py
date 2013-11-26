@@ -187,6 +187,7 @@ class HomeHandler(BaseHandler):
             scorer.GatherFriendsData()
             scorer.PrepareInvertedIndexes()
             scorer.MakeAllDocVectors()
+            scorer.DoRanking() #test
 
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(dict(
