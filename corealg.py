@@ -107,8 +107,8 @@ class Scorer:
                 vectors[k][term] = weighted_tf * inverted_index[term]["idf"] 
 
     def DoRanking(self):
+        ranking = []
         for friend in self.friends:
-            print "FRIEND------" + str(friend.name)
             mutual_fields = 0
             overall_sim = 0.0
             # condense this...?
@@ -121,7 +121,6 @@ class Scorer:
                     if token in self.bio_index:
                         bio_qry[token] += 1            
                 bio_sim = CosineSim(bio_qry, self.bio_vecs[friend.id])    
-                print "BIO SIM: " + str(bio_sim)           
  
             music_sim = 0.0
             if self.user["music"] is not None and friend.music is not None:
@@ -131,7 +130,6 @@ class Scorer:
                     if token in self.music_index:
                         music_qry[token] += 1            
                 music_sim = CosineSim(music_qry, self.music_vecs[friend.id])    
-                print "MUSIC SIM: " + str(music_sim)
 
             movies_sim = 0.0
             if self.user["movies"] is not None and friend.movies is not None:
@@ -141,7 +139,6 @@ class Scorer:
                     if token in self.movies_index:
                         movies_qry[token] += 1
                 movies_sim = CosineSim(movies_qry, self.movies_vecs[friend.id])    
-                print "MOVIES SIM: " + str(movies_sim)            
             
             books_sim = 0.0
             if self.user["books"] is not None and friend.books is not None:
@@ -151,11 +148,11 @@ class Scorer:
                     if token in self.books_index:
                         books_qry[token] += 1
                 books_sim = CosineSim(books_qry, self.books_vecs[friend.id])    
-                print "BOOKS SIM: " + str(books_sim)            
-                    
            
             if mutual_fields > 0:
                 overall_sim = (1.0 / mutual_fields) * (bio_sim + music_sim + movies_sim + books_sim)
-            print "OVERALL SIM SCORE FOR " + str(friend.name) + ": " + str(overall_sim)
-            print "---------------------------------------------"
+            ranking.append((overall_sim, friend))
+        
+        return ranking
+
 

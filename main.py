@@ -180,6 +180,7 @@ class HomeHandler(BaseHandler):
     def get(self):
         user = self.current_user
         friends = None
+        ranking = []
         if user:
             u = User.gql("WHERE id = :1", user["id"]).get()
             friends = u.friends.fetch(limit=1000)
@@ -187,13 +188,13 @@ class HomeHandler(BaseHandler):
             scorer.GatherFriendsData()
             scorer.PrepareInvertedIndexes()
             scorer.MakeAllDocVectors()
-            scorer.DoRanking() #test
+            ranking = sorted(scorer.DoRanking(), reverse = True)
 
         template = jinja_environment.get_template('main.html')
         self.response.out.write(template.render(dict(
             facebook_app_id=auth.FACEBOOK_APP_ID,
             current_user=user,
-            friends=friends
+            friends= [r[1] for r in ranking] #friends
         )))
 
 
