@@ -97,7 +97,7 @@ class BaseHandler(webapp2.RequestHandler):
                 if not user:
                     # Not an existing user so get user info
                     graph = facebook.GraphAPI(cookie["access_token"])
-                    profile = graph.get_object("me")
+                    profile = graph.get_object("me", fields="id,name,link,bio,music.limit(20),movies.limit(20),books.limit(20)")
                     user = User(
                         key_name = str(profile["id"]),
                         id = str(profile["id"]),

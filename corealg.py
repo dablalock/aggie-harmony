@@ -71,9 +71,6 @@ class Scorer:
         for k, doc in corpus.items(): # k = assigned id number of doc (friend id in this case)
             if doc is not None:
                 tokens = Tokenize(doc, stem)
-                #tokens = re.findall("[\w']+", doc.lower())
-                #if stem:
-                #    tokens = [porter2.stem(token) for token in tokens]
             
                 for s in tokens:
                     if s not in inverted_index: 
@@ -90,8 +87,6 @@ class Scorer:
         for term, val in inverted_index.items():
             inverted_index[term]["idf"] =  \
             math.log((N/float(inverted_index[term]["df"])), 2.0) 
-        #print "################### Inverted Index for " + str(corpus_name) +" ################"
-        #print inverted_index
 
     def MakeAllDocVectors(self):
         self.MakeDocVectorsForAttr("bio_docs", "bio_index", "bio_vecs")
@@ -110,11 +105,10 @@ class Scorer:
                 if raw_tf > 0:
                     weighted_tf = 1.0 + math.log(float(raw_tf), 2.0)
                 vectors[k][term] = weighted_tf * inverted_index[term]["idf"] 
-        #print "****DOC VECTORS***"
-        #print vectors                
 
     def DoRanking(self):
         for friend in self.friends:
+            print "FRIEND------" + str(friend.name)
             mutual_fields = 0
             overall_sim = 0.0
             # condense this...?
@@ -127,7 +121,8 @@ class Scorer:
                     if token in self.bio_index:
                         bio_qry[token] += 1            
                 bio_sim = CosineSim(bio_qry, self.bio_vecs[friend.id])    
-            
+                print "BIO SIM: " + str(bio_sim)           
+ 
             music_sim = 0.0
             if self.user["music"] is not None and friend.music is not None:
                 mutual_fields += 1
@@ -136,7 +131,8 @@ class Scorer:
                     if token in self.music_index:
                         music_qry[token] += 1            
                 music_sim = CosineSim(music_qry, self.music_vecs[friend.id])    
-            
+                print "MUSIC SIM: " + str(music_sim)
+
             movies_sim = 0.0
             if self.user["movies"] is not None and friend.movies is not None:
                 mutual_fields += 1
@@ -145,6 +141,7 @@ class Scorer:
                     if token in self.movies_index:
                         movies_qry[token] += 1
                 movies_sim = CosineSim(movies_qry, self.movies_vecs[friend.id])    
+                print "MOVIES SIM: " + str(movies_sim)            
             
             books_sim = 0.0
             if self.user["books"] is not None and friend.books is not None:
@@ -154,8 +151,11 @@ class Scorer:
                     if token in self.books_index:
                         books_qry[token] += 1
                 books_sim = CosineSim(books_qry, self.books_vecs[friend.id])    
+                print "BOOKS SIM: " + str(books_sim)            
                     
            
             if mutual_fields > 0:
                 overall_sim = (1.0 / mutual_fields) * (bio_sim + music_sim + movies_sim + books_sim)
-            print "SIM SCORE FOR " + str(friend.name) + ": " + str(overall_sim)
+            print "OVERALL SIM SCORE FOR " + str(friend.name) + ": " + str(overall_sim)
+            print "---------------------------------------------"
+
