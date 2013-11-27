@@ -3,7 +3,6 @@
 import re
 import math
 import porter2
-import main
 
 def Tokenize(text, stem):
     tokens = re.findall("[\w']+", text.lower())
@@ -113,38 +112,38 @@ class Scorer:
             overall_sim = 0.0
             # condense this...?
             bio_sim = 0.0
-            if self.user["bio"] is not None and friend.bio is not None:
+            if self.user.bio is not None and friend.bio is not None:
                 mutual_fields += 1
                 # Building queries with raw tfs
                 bio_qry = dict.fromkeys(self.bio_index, 0)
-                for token in Tokenize(self.user["bio"], True):
+                for token in Tokenize(self.user.bio, True):
                     if token in self.bio_index:
                         bio_qry[token] += 1            
                 bio_sim = CosineSim(bio_qry, self.bio_vecs[friend.id])    
  
             music_sim = 0.0
-            if self.user["music"] is not None and friend.music is not None:
+            if self.user.music is not None and friend.music is not None:
                 mutual_fields += 1
                 music_qry = dict.fromkeys(self.music_index, 0)
-                for token in Tokenize(self.user["music"], True):
+                for token in Tokenize(self.user.music, True):
                     if token in self.music_index:
                         music_qry[token] += 1            
                 music_sim = CosineSim(music_qry, self.music_vecs[friend.id])    
 
             movies_sim = 0.0
-            if self.user["movies"] is not None and friend.movies is not None:
+            if self.user.movies is not None and friend.movies is not None:
                 mutual_fields += 1
                 movies_qry = dict.fromkeys(self.movies_index, 0)
-                for token in Tokenize(self.user["movies"], True):
+                for token in Tokenize(self.user.movies, True):
                     if token in self.movies_index:
                         movies_qry[token] += 1
                 movies_sim = CosineSim(movies_qry, self.movies_vecs[friend.id])    
             
             books_sim = 0.0
-            if self.user["books"] is not None and friend.books is not None:
+            if self.user.books is not None and friend.books is not None:
                 mutual_fields += 1
                 books_qry = dict.fromkeys(self.books_index, 0)
-                for token in Tokenize(self.user["books"], True):
+                for token in Tokenize(self.user.books, True):
                     if token in self.books_index:
                         books_qry[token] += 1
                 books_sim = CosineSim(books_qry, self.books_vecs[friend.id])    
@@ -152,7 +151,7 @@ class Scorer:
             if mutual_fields > 0:
                 overall_sim = (1.0 / mutual_fields) * (bio_sim + music_sim + movies_sim + books_sim)
             ranking.append((overall_sim, friend))
-        
+
         return ranking
 
 
